@@ -6,6 +6,8 @@ import com.pard.actionpoint.project.domain.Project;
 import com.pard.actionpoint.project.repo.ProjectRepo;
 import com.pard.actionpoint.user.domain.User;
 import com.pard.actionpoint.user.repo.UserRepo;
+import com.pard.actionpoint.userProject.domain.UserProject;
+import com.pard.actionpoint.userProject.repo.UserProjectRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +23,7 @@ import java.util.Random;
 public class ProjectService {
     private final UserRepo userRepo;
     private final ProjectRepo projectRepo;
+    private final UserProjectRepo userProjectRepo;
 
     private static final String ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private static final int CODE_LENGTH = 5;
@@ -57,6 +60,31 @@ public class ProjectService {
         return code.toString();
     }
 
+    // 유저가 프로젝트를 참여하는 경우
+    @Transactional
+    public void joinProject(Long userId, ProjectDto.ProjectJoinDto projectJoinDto) {
+        // 유저, 프로젝트 조회
+        User user = userRepo.findById(userId)
+                .orElseThrow(() -> new BadRequestException("User not found"));
+
+        Project project = projectRepo.findByProjectCode(projectJoinDto.getProjectCode())
+                .orElseThrow(() -> new BadRequestException("Project not found"));
+
+        // 기존 참여 여부 확인
+        if(userProjectRepo.existsByUserAndProject(user, project)){
+            throw new BadRequestException("Project already exists");
+        }
+
+        // 관계 저장
+        UserProject userProject = new UserProject();
+        userProject.setUser(user);
+        userProject.setProject(project);
+        userProjectRepo.save(userProject);
+
+        project.setProjectUserCnt(project.getProjectUserCnt() + 1);
+        projectRepo.save(project);
+    }
+
     // 유저가 프로젝트를 나가는 경우
     @Transactional
     public void leaveProject(Long userId, Long projectId) {
@@ -72,5 +100,4 @@ public class ProjectService {
             projectRepo.save(project);
         }
     }
-
 }

@@ -10,4 +10,9 @@ public class ProjectDto {
     public static class ProjectCreateDto {
         private String projectName;
     }
+
+    @Getter @Setter @NoArgsConstructor @AllArgsConstructor
+    public static class ProjectJoinDto {
+        private String projectCode;
+    }
 }
