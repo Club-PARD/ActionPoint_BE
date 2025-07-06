@@ -9,8 +9,5 @@ public class ProjectDto {
     @Getter @Setter @NoArgsConstructor @AllArgsConstructor
     public static class ProjectCreateDto {
         private String projectName;
-        private String projectCode;
-        private Long ownerId;
-        private Integer projectUserCnt;
     }
 }
