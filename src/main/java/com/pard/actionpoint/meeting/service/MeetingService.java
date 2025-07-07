@@ -101,4 +101,13 @@ public class MeetingService {
             actionPointRepo.save(actionPoint);
         }
     }
+
+    // 회의록 삭제
+    @Transactional
+    public void deleteMeeting(Long meetingId) {
+        Meeting meeting = meetingRepo.findById(meetingId)
+                .orElseThrow(() -> new RuntimeException("Meeting not found"));
+
+        meetingRepo.delete(meeting);
+    }
 }

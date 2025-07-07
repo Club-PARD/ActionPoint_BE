@@ -29,16 +29,16 @@ public class Meeting {
     @JoinColumn(name = "project_id")
     private Project project;
 
-    @OneToMany(mappedBy = "meeting")
+    @OneToMany(mappedBy = "meeting", cascade = CascadeType.REMOVE)
     private List<MeetingParticipant> participants = new ArrayList<>();
 
-    @OneToMany(mappedBy = "meeting")
+    @OneToMany(mappedBy = "meeting", cascade = CascadeType.REMOVE)
     private List<Agenda> agendas = new ArrayList<>();
 
-    @OneToMany(mappedBy = "meeting")
+    @OneToMany(mappedBy = "meeting", cascade = CascadeType.REMOVE)
     private List<ActionPoint> actionPoints = new ArrayList<>();
 
-    @OneToMany(mappedBy = "meeting")
+    @OneToMany(mappedBy = "meeting", cascade = CascadeType.REMOVE)
     private List<MeetingReference> meetingReferences = new ArrayList<>();
 
     public Meeting(String meetingTitle, Date meetingDate, String meetingTime) {

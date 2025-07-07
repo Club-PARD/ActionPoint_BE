@@ -53,4 +53,12 @@ public class MeetingController {
         meetingService.saveActionPoints(meetingId, dto);
         return ResponseEntity.ok().build();
     }
+
+    // 회의록 삭제
+    @DeleteMapping("/{meetingId}")
+    @Operation(summary = "회의록 삭제")
+    public ResponseEntity<?> deleteMeeting(@PathVariable Long meetingId) {
+        meetingService.deleteMeeting(meetingId);
+        return ResponseEntity.noContent().build();
+    }
 }
