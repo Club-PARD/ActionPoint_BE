@@ -61,4 +61,22 @@ public class MeetingController {
         meetingService.deleteMeeting(meetingId);
         return ResponseEntity.noContent().build();
     }
+
+    // 회의 상세 조회
+    @GetMapping("/{meetingId}")
+    @Operation(summary = "회의 상세 보기 (조회 or 수정)")
+    public ResponseEntity<MeetingDto.MeetingDetailDto> getMeetingDetail(@PathVariable Long meetingId) {
+        MeetingDto.MeetingDetailDto dto = meetingService.getMeetingDetail(meetingId);
+        return ResponseEntity.ok().body(dto);
+    }
+
+    // 회의록 수정
+    @PatchMapping("/edit")
+    @Operation(summary = "회의록 수정", description = "추가 논의, 아젠다 내용, 액션포인트 수정 및 추가 / JSON에 meetingId 명시 필요합니다 + PATCH로 액션포인트 수정과 생성을 한번에 처리할거라 두 액션포인트 부분을 따로 리스트화해서 보내주셔야 합니다.")
+    public ResponseEntity<?> updateMeeting(
+            @RequestBody MeetingDto.MeetingUpdateRequestDto dto
+    ) {
+        meetingService.updateMeeting(dto);
+        return ResponseEntity.ok().build();
+    }
 }

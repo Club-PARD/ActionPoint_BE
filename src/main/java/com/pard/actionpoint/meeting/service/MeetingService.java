@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.swing.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -109,5 +110,105 @@ public class MeetingService {
                 .orElseThrow(() -> new RuntimeException("Meeting not found"));
 
         meetingRepo.delete(meeting);
+    }
+
+    // 회의 Detail 페이지
+    @Transactional
+    public MeetingDto.MeetingDetailDto getMeetingDetail(Long meetingId) {
+        Meeting meeting =meetingRepo.findById(meetingId)
+                .orElseThrow(() -> new RuntimeException("Meeting not found"));
+
+        // 기본 회의 정보
+        MeetingDto.MeetingDetailDto dto = new MeetingDto.MeetingDetailDto();
+        dto.setMeetingId(meeting.getId());
+        dto.setMeetingTitle(meeting.getMeetingTitle());
+        dto.setMeetingDate(meeting.getMeetingDate());
+        dto.setMeetingTime(meeting.getMeetingTime());
+        dto.setMeetingLastSummary(meeting.getMeetingLastSummary());
+
+        // 서기
+        MeetingParticipant writer = meetingParticipantRepo.findByMeeting(meeting).stream()
+                .filter(MeetingParticipant::getIsWriter)
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Writer not found"));
+
+        MeetingDto.MeetingDetailDto.UserDto writerDto = new MeetingDto.MeetingDetailDto.UserDto();
+        writerDto.setUserId(writer.getUser().getId());
+        writerDto.setUserName(writer.getUser().getUserName());
+        dto.setWriter(writerDto);
+
+        // 참석자
+        List<MeetingDto.MeetingDetailDto.UserDto> participants = meetingParticipantRepo.findByMeeting(meeting).stream()
+                .map(mp -> {
+                    MeetingDto.MeetingDetailDto.UserDto p = new MeetingDto.MeetingDetailDto.UserDto();
+                    p.setUserId(mp.getUser().getId());
+                    p.setUserName(mp.getUser().getUserName());
+                    return p;
+                }).collect(Collectors.toList());
+        dto.setParticipants(participants);
+
+        // 참고자료
+        List<String> urls = meetingReferenceRepo.findByMeeting(meeting).stream()
+                .map(MeetingReference::getReferenceUrl)
+                .collect(Collectors.toList());
+        dto.setReferenceUrls(urls);
+
+        // 회의 안건
+        List<MeetingDto.MeetingDetailDto.AgendaDto> agendas = agendaRepo.findByMeeting(meeting).stream()
+                .map(a -> {
+                    MeetingDto.MeetingDetailDto.AgendaDto ag = new MeetingDto.MeetingDetailDto.AgendaDto();
+                    ag.setAgendaId(a.getId());
+                    ag.setAgendaTitle(a.getAgendaTitle());
+                    ag.setAgendaContent(a.getAgendaContent());
+                    return ag;
+                }).collect(Collectors.toList());
+        dto.setAgendas(agendas);
+
+        // 액션 포인트
+        List<MeetingDto.MeetingDetailDto.ActionPointDto> aps = actionPointRepo.findByMeeting(meeting).stream()
+                .map(ap -> {
+                    MeetingDto.MeetingDetailDto.ActionPointDto apDto = new MeetingDto.MeetingDetailDto.ActionPointDto();
+                    apDto.setActionPointId(ap.getId());
+                    apDto.setUserId(ap.getUser().getId());
+                    apDto.setUserName(ap.getUser().getUserName());
+                    apDto.setActionContent(ap.getActionContent());
+                    return apDto;
+                }).collect(Collectors.toList());
+        dto.setActionPoints(aps);
+
+        return dto;
+    }
+
+    // 회의록 수정
+    @Transactional
+    public void updateMeeting(MeetingDto.MeetingUpdateRequestDto dto){
+        Meeting meeting = meetingRepo.findById(dto.getMeetingId())
+                .orElseThrow(() -> new RuntimeException("Meeting not found"));
+
+        // 회의 요약 수정
+        meeting.setMeetingLastSummary(dto.getMeetingLastSummary());
+
+        // 회의 안건 수정
+        for (MeetingDto.MeetingUpdateRequestDto.AgendaUpdateDto agendaDto : dto.getAgendas()) {
+            Agenda agenda = agendaRepo.findById(agendaDto.getAgendaId())
+                    .orElseThrow(() -> new RuntimeException("Agenda not found"));
+            agenda.setAgendaContent(agendaDto.getAgendaContent());
+        }
+
+        // 기존 액션포인트 수정
+        for (MeetingDto.MeetingUpdateRequestDto.ActionPointUpdateDto apDto : dto.getActionPoints()){
+            ActionPoint ap = actionPointRepo.findById(apDto.getActionPointId())
+                    .orElseThrow(() -> new RuntimeException("ActionPoint not found"));
+            ap.setActionContent(apDto.getActionContent());
+            ap.setIsFinished(false);
+        }
+
+        // 새 액션포인트 추가
+        for (MeetingDto.MeetingUpdateRequestDto.ActionPointCreateDto newAp : dto.getNewActionPoints()){
+            User user = userRepo.findById(newAp.getUserId())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+            ActionPoint ap = new ActionPoint(newAp.getActionContent(), user, false, meeting);
+            actionPointRepo.save(ap);
+        }
     }
 }

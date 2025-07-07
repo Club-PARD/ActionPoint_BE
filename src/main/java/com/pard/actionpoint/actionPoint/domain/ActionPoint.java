@@ -3,12 +3,10 @@ package com.pard.actionpoint.actionPoint.domain;
 import com.pard.actionpoint.meeting.domain.Meeting;
 import com.pard.actionpoint.user.domain.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity @Builder @Getter @AllArgsConstructor @NoArgsConstructor
+@Setter // 토글을 위함
 public class ActionPoint {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

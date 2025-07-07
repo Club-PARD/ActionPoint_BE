@@ -21,8 +21,6 @@ public class ProjectDetailDto {
         private Long meetingId;
         private String meetingTitle;
         private Date meetingDate;
-        private int totalActionPoints;
-        private int finishedActionPoints;
         private List<ActionPointDto> actionPoints;
     }
 

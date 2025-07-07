@@ -6,7 +6,9 @@ import com.pard.actionpoint.user.domain.User;
 import com.pard.actionpoint.userProject.domain.UserProject;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,6 +26,10 @@ public class Project {
     private Long ownerId;
     private Integer projectUserCnt;
     private int projectStatus; // 0 : 활성화, 1 : 새로만든 프로젝트 (회의 없음), 2 : 회의가 오래된 프로젝트
+
+    @CreatedDate // 생성 시점 자동 저장
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "project")
     private List<UserProject> userProjects = new ArrayList<>();

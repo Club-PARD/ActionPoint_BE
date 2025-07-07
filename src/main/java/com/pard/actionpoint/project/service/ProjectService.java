@@ -21,6 +21,7 @@ import java.security.SecureRandom;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -134,19 +135,34 @@ public class ProjectService {
                     new ProjectDetailDto.ActionPointDto(ap.getId(), ap.getActionContent(), ap.getIsFinished())
             ).toList();
 
-            int totalCount = actionPointRepo.countByMeetingId(meeting.getId());
-            int finishedCount = actionPointRepo.countByMeetingIdAndIsFinishedTrue(meeting.getId());
-
             return new ProjectDetailDto.MeetingListDto(
                     meeting.getId(),
                     meeting.getMeetingTitle(),
                     meeting.getMeetingDate(),
-                    totalCount,
-                    finishedCount,
                     actionPointDtos
             );
         }).toList();
 
         return new ProjectDetailDto(project.getProjectName(), project.getProjectCode(), meetingDtos);
+    }
+
+    // 프로젝트 리스트 페이지
+    @Transactional
+    public List<ProjectDto.ProjectListDto> getUserProjects(Long userId) {
+        List<Project> projects = projectRepo.findProjectsByUserIdOrderByCreatedAtDesc(userId);
+
+        return projects.stream().map(project -> {
+            String ownerName = userRepo.findById(project.getOwnerId())
+                    .map(User::getUserName)
+                    .orElse("Unknown");
+
+            return new ProjectDto.ProjectListDto(
+                    project.getId(),
+                    project.getProjectName(),
+                    ownerName,
+                    project.getProjectUserCnt() - 1, // 본인 제외
+                    project.getProjectStatus()
+            );
+        }).collect(Collectors.toList());
     }
 }

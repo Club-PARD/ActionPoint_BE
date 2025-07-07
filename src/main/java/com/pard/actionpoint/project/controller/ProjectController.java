@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/project")
@@ -58,5 +60,14 @@ public class ProjectController {
     ) {
         ProjectDetailDto projectDetailDto = projectService.getProjectDetails(userId, projectId);
         return ResponseEntity.ok().body(projectDetailDto);
+    }
+
+    // 프로젝트 리스트 페이지
+    @GetMapping("/lists")
+    @Operation(summary = "프로젝트 리스트 페이지", description = "Status - 0: 정상, 1: 회의 X, 2: 회의 한 달전")
+    public ResponseEntity<List<ProjectDto.ProjectListDto>> getProjects(
+            @RequestHeader("X-USER-ID") Long userId) {
+        List<ProjectDto.ProjectListDto> projectList = projectService.getUserProjects(userId);
+        return ResponseEntity.ok().body(projectList);
     }
 }
