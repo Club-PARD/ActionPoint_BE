@@ -35,12 +35,22 @@ public class MeetingController {
     }
 
     // 3단계: 액션포인트 및 최종 요약 저장
-    @PatchMapping("/actionpoints")
-    @Operation(summary = "액션 포인트, 최종 요약 저장")
+    @PatchMapping("/{meetingId}/summary")
+    @Operation(summary = "최종 요약 저장")
     public ResponseEntity<?> actionPoints(
-            @RequestBody MeetingDto.ActionPointUpdateDto dto
+            @PathVariable Long meetingId,
+            @RequestBody MeetingDto.MeetingSummaryDto dto
     ) {
-        meetingService.updateActionPoint(dto);
+        meetingService.updateLastSummary(meetingId, dto);
+        return ResponseEntity.ok().build();
+    }
+    @PostMapping("/{meetingId}/actionpoints")
+    @Operation(summary = "액션 포인트 저장")
+    public ResponseEntity<?> saveActionPoints(
+            @PathVariable Long meetingId,
+            @RequestBody List<MeetingDto.ActionPointDto> dto
+    ) {
+        meetingService.saveActionPoints(meetingId, dto);
         return ResponseEntity.ok().build();
     }
 }

@@ -74,25 +74,27 @@ public class MeetingService {
     }
 
     // (회의록 작성) 끝 페이지
-    // 액션포인트 및 최종 회의 요약 업데이트
+    // 최종 회의 요약 업데이트
     @Transactional
-    public void updateActionPoint(MeetingDto.ActionPointUpdateDto actionPointUpdateDto){
-        // 회의 조회
-        Meeting meeting = meetingRepo.findById(actionPointUpdateDto.getMeetingId())
+    public void updateLastSummary(Long meetingId, MeetingDto.MeetingSummaryDto meetingSummaryDto){
+        Meeting meeting = meetingRepo.findById(meetingId)
+                .orElseThrow(() -> new RuntimeException("Meeting not found"));
+        meeting.setMeetingLastSummary(meetingSummaryDto.getMeetingLastSummary());
+    }
+    // 액션 포인트 저장
+    @Transactional
+    public void saveActionPoints(Long meetingId, List<MeetingDto.ActionPointDto> actionPoints) {
+        Meeting meeting = meetingRepo.findById(meetingId)
                 .orElseThrow(() -> new RuntimeException("Meeting not found"));
 
-        // 최종 요약 저장
-        meeting.setMeetingLastSummary(actionPointUpdateDto.getMeetingLastSummary());
-
-        // 액션포인트 저장
-        for (MeetingDto.ActionPointDto ap : actionPointUpdateDto.getActionPoints()) {
+        for (MeetingDto.ActionPointDto ap : actionPoints) {
             User user = userRepo.findById(ap.getUserId())
                     .orElseThrow(() -> new RuntimeException("User not found"));
 
             ActionPoint actionPoint = new ActionPoint(
                     ap.getActionContent(),
                     user,
-                    false,
+                    false, // 초기 상태는 무조건 false
                     meeting
             );
 

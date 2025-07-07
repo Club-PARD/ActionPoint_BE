@@ -30,13 +30,8 @@ public class MeetingDto {
     }
 
     @Getter @Setter @NoArgsConstructor @AllArgsConstructor
-    public class ActionPointUpdateDto{
-        private Long meetingId;
+    public class MeetingSummaryDto{
         private String meetingLastSummary;
-
-        private List<ActionPointDto> actionPoints;
-
-
     }
 
     @Getter @Setter @NoArgsConstructor @AllArgsConstructor
