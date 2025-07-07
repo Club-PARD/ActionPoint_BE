@@ -21,7 +21,8 @@ public class GoogleTokenService {
         // 구글 ID 토큰 검증
         GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier
                 .Builder(new NetHttpTransport(), new JacksonFactory())
-                .setAudience(List.of("GOOGLE_CLIENT_ID")) // 실제 클라이언트 ID
+//                .setAudience(List.of("GOOGLE_CLIENT_ID")) // 실제 클라이언트 ID
+                .setAudience(List.of("226608210003-oiuob1n5qioht801eac5kru523j46la1.apps.googleusercontent.com"))
                 .build();
 
         GoogleIdToken idToken;
