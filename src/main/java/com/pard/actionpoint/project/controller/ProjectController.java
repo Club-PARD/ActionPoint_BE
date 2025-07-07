@@ -2,6 +2,7 @@ package com.pard.actionpoint.project.controller;
 
 import com.pard.actionpoint.DTO.ProjectDto;
 import com.pard.actionpoint.project.service.ProjectService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,7 @@ public class ProjectController {
 
     // 프로젝트 생성
     @PostMapping
+    @Operation(summary = "프로젝트 생성")
     public ResponseEntity<?> createProject(
             @RequestHeader("X-USER_ID") Long userId,
             @RequestBody ProjectDto.ProjectCreateDto projectDto
@@ -26,6 +28,7 @@ public class ProjectController {
 
     // 프로젝트 참여
     @PostMapping("/join")
+    @Operation(summary = "프로젝트 참여")
     public ResponseEntity<?> joinProject(
             @RequestHeader("X-USER-ID") Long userId,
             @RequestBody ProjectDto.ProjectJoinDto projectDto
@@ -36,6 +39,7 @@ public class ProjectController {
 
     // 유저가 프로젝트 나갈 때
     @PostMapping("/{projectId}/leave")
+    @Operation(summary = "프로젝트 나가기")
     public ResponseEntity<?> leaveProject(
             @RequestHeader("X-USER-ID") Long userId,
             @PathVariable Long projectId

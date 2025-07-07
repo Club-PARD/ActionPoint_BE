@@ -3,6 +3,7 @@ package com.pard.actionpoint.user.controller;
 import com.pard.actionpoint.DTO.UserDto;
 import com.pard.actionpoint.user.domain.User;
 import com.pard.actionpoint.user.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -18,6 +19,7 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/profile")
+    @Operation(summary = "유저 정보 보기 (한 사람용)")
     public ResponseEntity<UserDto.UserResDto> getUserProfile(@AuthenticationPrincipal User user){
         return ResponseEntity.ok(userService.read(user.getId()));
     }

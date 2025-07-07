@@ -2,6 +2,7 @@ package com.pard.actionpoint.meeting.controller;
 
 import com.pard.actionpoint.DTO.MeetingDto;
 import com.pard.actionpoint.meeting.service.MeetingService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +17,8 @@ public class MeetingController {
     private final MeetingService meetingService;
 
     // 1단계: 회의 생성
-    @PostMapping("/start")
+    @PostMapping("/title")
+    @Operation(summary = "제목, 날짜, 시간, 참여자, 서기, 안건 저장")
     public ResponseEntity<Long> createMeeting(@RequestBody MeetingDto.MeetingCreateDto dto) {
         Long meetingId = meetingService.createMeeting(dto);
         return ResponseEntity.ok(meetingId);
@@ -24,6 +26,7 @@ public class MeetingController {
 
     // 2단계: 안건 상세 내용 저장
     @PatchMapping("/agendas")
+    @Operation(summary = "회의록 저장")
     public ResponseEntity<?> updateAgendas(
             @RequestBody List<MeetingDto.AgendaDetailUpdateDto> agendas
     ) {
@@ -33,6 +36,7 @@ public class MeetingController {
 
     // 3단계: 액션포인트 및 최종 요약 저장
     @PatchMapping("/actionpoints")
+    @Operation(summary = "액션 포인트, 최종 요약 저장")
     public ResponseEntity<?> actionPoints(
             @RequestBody MeetingDto.ActionPointUpdateDto dto
     ) {

@@ -33,12 +33,14 @@ public class MeetingService {
     private final MeetingReferenceRepo meetingReferenceRepo;
     private final ActionPointRepo actionPointRepo;
 
+    // (회의록 작성) 첫 페이지
     @Transactional
     public Long createMeeting(MeetingDto.MeetingCreateDto meetingCreateDto) {
         // 회의 저장
         Meeting meeting = new Meeting(meetingCreateDto.getMeetingTitle(), meetingCreateDto.getMeetingDate(), meetingCreateDto.getMeetingTime());
         meetingRepo.save(meeting);
 
+        // 회의 참여자 저장
         for (Long userId : meetingCreateDto.getParticipantIds()){
             boolean isWriter = userId.equals(meetingCreateDto.getWriterId());
             User user = userRepo.findById(userId)
@@ -47,10 +49,12 @@ public class MeetingService {
             meetingParticipantRepo.save(new MeetingParticipant(user, meeting, isWriter));
         }
 
+        // 회의 안건 제목 저장
         for (String title : meetingCreateDto.getAgendaTitles()){
             agendaRepo.save(new Agenda(title, meeting));
         }
 
+        // 회의 참고 자료 저장 (S3 URL)
         for (String url : meetingCreateDto.getReferenceUrls()) {
             meetingReferenceRepo.save(new MeetingReference(meeting, url));
         }
@@ -58,6 +62,8 @@ public class MeetingService {
         return meeting.getId();
     }
 
+    // (회의록 작성) 두번째 페이지
+    // 안건에 대한 회의록 업데이트
     @Transactional
     public void updateAgendaDetails(List<MeetingDto.AgendaDetailUpdateDto> agendaList){
         for(MeetingDto.AgendaDetailUpdateDto agendaDto : agendaList){
@@ -67,8 +73,11 @@ public class MeetingService {
         }
     }
 
+    // (회의록 작성) 끝 페이지
+    // 액션포인트 및 최종 회의 요약 업데이트
     @Transactional
     public void updateActionPoint(MeetingDto.ActionPointUpdateDto actionPointUpdateDto){
+        // 회의 조회
         Meeting meeting = meetingRepo.findById(actionPointUpdateDto.getMeetingId())
                 .orElseThrow(() -> new RuntimeException("Meeting not found"));
 
@@ -83,7 +92,7 @@ public class MeetingService {
             ActionPoint actionPoint = new ActionPoint(
                     ap.getActionContent(),
                     user,
-                    ap.isFinished(),
+                    false,
                     meeting
             );
 

@@ -38,7 +38,7 @@ public class ProjectService {
                 userId,
                 1,
                 1
-        );
+        ); // 기본 상태는 회의가 없는 프로젝트 상태
         projectRepo.save(project);
     }
 
@@ -88,12 +88,22 @@ public class ProjectService {
     // 유저가 프로젝트를 나가는 경우
     @Transactional
     public void leaveProject(Long userId, Long projectId) {
+        User user = userRepo.findById(userId)
+                .orElseThrow(() -> new BadRequestException("User not found"));
+
         Project project = projectRepo.findById(projectId)
                 .orElseThrow(() -> new BadRequestException("Project not found"));
 
+        // UserProject 관계 삭제
+        UserProject userProject = userProjectRepo.findByUserAndProject(user, project)
+                .orElseThrow(() -> new BadRequestException("User is not in this project"));
+        userProjectRepo.delete(userProject);
+
+        // 인원 수 감소
         int updatedCount = project.getProjectUserCnt() - 1;
         project.setProjectUserCnt(updatedCount);
 
+        // 0명이면 프로젝트 삭제
         if (updatedCount == 0) {
             projectRepo.delete(project);
         } else {
