@@ -1,7 +1,12 @@
 package com.pard.actionpoint.project.service;
 
+import com.pard.actionpoint.DTO.ProjectDetailDto;
 import com.pard.actionpoint.DTO.ProjectDto;
+import com.pard.actionpoint.actionPoint.domain.ActionPoint;
+import com.pard.actionpoint.actionPoint.repo.ActionPointRepo;
 import com.pard.actionpoint.global.exception.BadRequestException;
+import com.pard.actionpoint.meeting.domain.Meeting;
+import com.pard.actionpoint.meeting.repo.MeetingRepo;
 import com.pard.actionpoint.project.domain.Project;
 import com.pard.actionpoint.project.repo.ProjectRepo;
 import com.pard.actionpoint.user.domain.User;
@@ -24,6 +29,8 @@ public class ProjectService {
     private final UserRepo userRepo;
     private final ProjectRepo projectRepo;
     private final UserProjectRepo userProjectRepo;
+    private final MeetingRepo meetingRepo;
+    private final ActionPointRepo actionPointRepo;
 
     private static final String ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private static final int CODE_LENGTH = 5;
@@ -109,5 +116,37 @@ public class ProjectService {
         } else {
             projectRepo.save(project);
         }
+    }
+
+    // 프로젝트 내부 페이지
+    public ProjectDetailDto getProjectDetails(Long userId, Long projectId){
+        Project project = projectRepo.findById(projectId)
+                .orElseThrow(() -> new BadRequestException("Project not found"));
+
+        // 최신순으로 회의록 제공
+        List<Meeting> meetings = meetingRepo.findAllByProjectIdOrderByMeetingDateDesc(projectId);
+
+        // 회의 내용
+        List<ProjectDetailDto.MeetingListDto> meetingDtos = meetings.stream().map(meeting -> {
+            List<ActionPoint> userActionPoints = actionPointRepo.findByMeetingIdAndUserId(meeting.getId(), userId);
+            // 회의 별 액션포인트 내용
+            List<ProjectDetailDto.ActionPointDto> actionPointDtos = userActionPoints.stream().map(ap ->
+                    new ProjectDetailDto.ActionPointDto(ap.getId(), ap.getActionContent(), ap.getIsFinished())
+            ).toList();
+
+            int totalCount = actionPointRepo.countByMeetingId(meeting.getId());
+            int finishedCount = actionPointRepo.countByMeetingIdAndIsFinishedTrue(meeting.getId());
+
+            return new ProjectDetailDto.MeetingListDto(
+                    meeting.getId(),
+                    meeting.getMeetingTitle(),
+                    meeting.getMeetingDate(),
+                    totalCount,
+                    finishedCount,
+                    actionPointDtos
+            );
+        }).toList();
+
+        return new ProjectDetailDto(project.getProjectName(), project.getProjectCode(), meetingDtos);
     }
 }

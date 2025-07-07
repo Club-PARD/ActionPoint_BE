@@ -1,5 +1,6 @@
 package com.pard.actionpoint.project.controller;
 
+import com.pard.actionpoint.DTO.ProjectDetailDto;
 import com.pard.actionpoint.DTO.ProjectDto;
 import com.pard.actionpoint.project.service.ProjectService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -46,5 +47,16 @@ public class ProjectController {
     ) {
         projectService.leaveProject(userId, projectId);
         return ResponseEntity.ok().body("Project leaved");
+    }
+
+    // 프로젝트 내부 페이지
+    @GetMapping("/{projectId}/details")
+    @Operation(summary = "프로젝트 내부 페이지")
+    public ResponseEntity<ProjectDetailDto> getProjectDetails(
+            @RequestHeader("X-USER-ID") Long userId,
+            @PathVariable Long projectId
+    ) {
+        ProjectDetailDto projectDetailDto = projectService.getProjectDetails(userId, projectId);
+        return ResponseEntity.ok().body(projectDetailDto);
     }
 }
