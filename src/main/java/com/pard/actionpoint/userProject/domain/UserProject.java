@@ -1,6 +1,5 @@
 package com.pard.actionpoint.userProject.domain;
 
-import com.pard.actionpoint.meetingParticipant.domain.MeetingParticipantId;
 import com.pard.actionpoint.project.domain.Project;
 import com.pard.actionpoint.user.domain.User;
 import jakarta.persistence.*;
