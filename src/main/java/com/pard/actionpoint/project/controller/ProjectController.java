@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,8 +26,9 @@ public class ProjectController {
             @RequestHeader("X-USER-ID") Long userId,
             @RequestBody ProjectDto.ProjectCreateDto projectDto
     ) {
-        projectService.createProject(userId, projectDto);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        String projectCode = projectService.createProject(userId, projectDto);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(Map.of("projectCode", projectCode));
     }
 
     // 프로젝트 참여

@@ -38,7 +38,7 @@ public class ProjectService {
     private final SecureRandom random = new SecureRandom();
 
     // 프로젝트 생성
-    public void createProject(Long userId, ProjectDto.ProjectCreateDto projectCreateDto) {
+    public String createProject(Long userId, ProjectDto.ProjectCreateDto projectCreateDto) {
         String projectCode = generateUniqueCode();
         Project project = new Project(
                 projectCreateDto.getProjectName(),
@@ -48,6 +48,8 @@ public class ProjectService {
                 1
         ); // 기본 상태는 회의가 없는 프로젝트 상태
         projectRepo.save(project);
+
+        return projectCode;
     }
 
     private String generateUniqueCode() {
