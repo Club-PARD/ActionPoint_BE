@@ -1,7 +1,9 @@
 package com.pard.actionpoint.meeting.controller;
 
 import com.pard.actionpoint.DTO.MeetingDto;
+import com.pard.actionpoint.DTO.ProjectDto;
 import com.pard.actionpoint.meeting.service.MeetingService;
+import com.pard.actionpoint.userProject.service.UserProjectService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +17,7 @@ import java.util.List;
 
 public class MeetingController {
     private final MeetingService meetingService;
+    private final UserProjectService userProjectService;
 
     // 1단계: 회의 생성
     @PostMapping("/title")
@@ -78,5 +81,15 @@ public class MeetingController {
     ) {
         meetingService.updateMeeting(dto);
         return ResponseEntity.ok().build();
+    }
+
+    // 프로젝트 참석자 리스트
+    @GetMapping("/{projectId}/users")
+    @Operation(summary = "프로젝트에 속한 유저 리스트 조회")
+    public ResponseEntity<ProjectDto.ProjectUserListDto> getProjectUsers(
+            @PathVariable Long projectId
+    ) {
+        ProjectDto.ProjectUserListDto response = userProjectService.getUserProjectList(projectId);
+        return ResponseEntity.ok().body(response);
     }
 }
