@@ -27,7 +27,6 @@ public class Project {
     private Integer projectUserCnt;
     private int projectStatus; // 0 : 활성화, 1 : 새로만든 프로젝트 (회의 없음), 2 : 회의가 오래된 프로젝트
 
-    @CreatedDate // 생성 시점 자동 저장
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
@@ -43,5 +42,6 @@ public class Project {
         this.ownerId = ownerId;
         this.projectUserCnt = projectUserCnt;
         this.projectStatus = projectStatus;
+        this.createdAt = LocalDateTime.now();
     }
 }
