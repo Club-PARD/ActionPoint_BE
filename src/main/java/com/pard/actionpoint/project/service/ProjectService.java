@@ -48,14 +48,14 @@ public class ProjectService {
                 1
         ); // 기본 상태는 회의가 없는 프로젝트 상태
         projectRepo.save(project);
+        projectRepo.flush();
 
         User user = userRepo.findById(userId)
                 .orElseThrow(() -> new BadRequestException("User not found"));
 
-        UserProject userProject = UserProject.builder()
-                .user(user)
-                .project(project)
-                .build();
+        UserProject userProject = new UserProject();
+        userProject.setUser(user);
+        userProject.setProject(project);
         userProjectRepo.save(userProject);
 
         return projectCode;
