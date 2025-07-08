@@ -56,7 +56,7 @@ public class ProjectService {
         String code;
         do {
             code = randomCode();
-        } while(!projectRepo.existsByProjectCode(code));
+        } while(projectRepo.existsByProjectCode(code));
 
         return code;
     }
