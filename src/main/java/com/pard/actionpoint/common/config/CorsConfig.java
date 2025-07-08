@@ -19,7 +19,7 @@ public class CorsConfig {
 
         config.setAllowCredentials(true);
 
-        config.setAllowedOrigins(Arrays.asList("thttp://localhost:3000"));
+        config.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
 
         config.addAllowedHeader("*");
 
