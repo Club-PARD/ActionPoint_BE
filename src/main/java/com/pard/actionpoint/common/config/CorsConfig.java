@@ -6,6 +6,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
+import java.util.Arrays;
+
 @Configuration
 
 public class CorsConfig {
@@ -17,7 +19,7 @@ public class CorsConfig {
 
         config.setAllowCredentials(true);
 
-        config.addAllowedOrigin("*");
+        config.setAllowedOrigins(Arrays.asList("thttp://localhost:3000"));
 
         config.addAllowedHeader("*");
 
