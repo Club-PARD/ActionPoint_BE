@@ -22,7 +22,7 @@ public class ProjectController {
     @PostMapping
     @Operation(summary = "프로젝트 생성")
     public ResponseEntity<?> createProject(
-            @RequestHeader("X-USER_ID") Long userId,
+            @RequestHeader("X-USER-ID") Long userId,
             @RequestBody ProjectDto.ProjectCreateDto projectDto
     ) {
         projectService.createProject(userId, projectDto);
