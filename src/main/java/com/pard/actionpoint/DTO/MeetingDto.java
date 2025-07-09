@@ -11,7 +11,9 @@ import java.util.List;
 
 public class MeetingDto {
     @Getter @Setter @NoArgsConstructor @AllArgsConstructor
-    public class MeetingCreateDto {
+    public static class MeetingCreateDto {
+        private Long projectId;
+
         private String meetingTitle;
         private Date meetingDate;
         private String meetingTime;

@@ -41,7 +41,8 @@ public class Meeting {
     @OneToMany(mappedBy = "meeting", cascade = CascadeType.REMOVE)
     private List<MeetingReference> meetingReferences = new ArrayList<>();
 
-    public Meeting(String meetingTitle, Date meetingDate, String meetingTime) {
+    public Meeting(Project project, String meetingTitle, Date meetingDate, String meetingTime) {
+        this.project = project;
         this.meetingTitle = meetingTitle;
         this.meetingDate = meetingDate;
         this.meetingTime = meetingTime;

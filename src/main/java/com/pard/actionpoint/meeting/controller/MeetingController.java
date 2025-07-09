@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -20,16 +21,20 @@ public class MeetingController {
     private final UserProjectService userProjectService;
 
     // 1단계: 회의 생성
-    @PostMapping("/title")
-    @Operation(summary = "제목, 날짜, 시간, 참여자, 서기, 안건 저장")
-    public ResponseEntity<Long> createMeeting(@RequestBody MeetingDto.MeetingCreateDto dto) {
-        Long meetingId = meetingService.createMeeting(dto);
+    @PostMapping("/create/title")
+    @Operation(summary = "[1단계] 제목, 날짜, 시간, 참여자, 서기, 파일, 회의 안건 저장",
+            description = "데이터와 파일을 같이 받아와야 해서 RequestPart를 사용했습니다. 잘 부탁드립니다.")
+    public ResponseEntity<Long> createMeeting(
+            @RequestPart("data") MeetingDto.MeetingCreateDto dto,
+            @RequestPart("files") List<MultipartFile> files
+    ) {
+        Long meetingId = meetingService.createMeeting(dto, files);
         return ResponseEntity.ok(meetingId);
     }
 
     // 2단계: 안건 상세 내용 저장
-    @PatchMapping("/agendas")
-    @Operation(summary = "회의록 저장")
+    @PatchMapping("/create/agendas")
+    @Operation(summary = "[2단계] 회의록 저장")
     public ResponseEntity<?> updateAgendas(
             @RequestBody List<MeetingDto.AgendaDetailUpdateDto> agendas
     ) {
@@ -38,8 +43,8 @@ public class MeetingController {
     }
 
     // 3단계: 액션포인트 및 최종 요약 저장
-    @PatchMapping("/{meetingId}/summary")
-    @Operation(summary = "최종 요약 저장")
+    @PatchMapping("/create/{meetingId}/summary")
+    @Operation(summary = "[3단계] 최종 요약 저장")
     public ResponseEntity<?> actionPoints(
             @PathVariable Long meetingId,
             @RequestBody MeetingDto.MeetingSummaryDto dto
@@ -47,8 +52,8 @@ public class MeetingController {
         meetingService.updateLastSummary(meetingId, dto);
         return ResponseEntity.ok().build();
     }
-    @PostMapping("/{meetingId}/actionpoints")
-    @Operation(summary = "액션 포인트 저장")
+    @PostMapping("/create/{meetingId}/actionpoints")
+    @Operation(summary = "[3단계] 액션 포인트 저장")
     public ResponseEntity<?> saveActionPoints(
             @PathVariable Long meetingId,
             @RequestBody List<MeetingDto.ActionPointDto> dto

@@ -5,6 +5,7 @@ import com.pard.actionpoint.actionPoint.domain.ActionPoint;
 import com.pard.actionpoint.actionPoint.repo.ActionPointRepo;
 import com.pard.actionpoint.agenda.domain.Agenda;
 import com.pard.actionpoint.agenda.repo.AgendaRepo;
+import com.pard.actionpoint.common.s3.S3Uploader;
 import com.pard.actionpoint.global.exception.BadRequestException;
 import com.pard.actionpoint.meeting.domain.Meeting;
 import com.pard.actionpoint.meeting.repo.MeetingRepo;
@@ -13,13 +14,18 @@ import com.pard.actionpoint.meetingParticipant.domain.MeetingParticipantId;
 import com.pard.actionpoint.meetingParticipant.repo.MeetingParticipantRepo;
 import com.pard.actionpoint.meetingReference.domain.MeetingReference;
 import com.pard.actionpoint.meetingReference.repo.MeetingReferenceRepo;
+import com.pard.actionpoint.project.domain.Project;
+import com.pard.actionpoint.project.repo.ProjectRepo;
 import com.pard.actionpoint.user.domain.User;
 import com.pard.actionpoint.user.repo.UserRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.swing.*;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,12 +39,43 @@ public class MeetingService {
     private final AgendaRepo agendaRepo;
     private final MeetingReferenceRepo meetingReferenceRepo;
     private final ActionPointRepo actionPointRepo;
+    private final ProjectRepo projectRepo;
+
+    private final S3Uploader s3Uploader;
 
     // (회의록 작성) 첫 페이지
+    // 참고자료 S3 처리
+    @Transactional
+    public Long createMeeting(MeetingDto.MeetingCreateDto dto, List<MultipartFile> files) {
+        List <String> referenceUrls = new ArrayList<>();
+
+        for (MultipartFile file : files) {
+            try {
+                String url = s3Uploader.upload(file, "meeting/reference");
+                referenceUrls.add(url);
+            } catch (IOException e) {
+                throw new RuntimeException("S3 파일 업로드 실패", e); // 혹은 커스텀 예외 처리
+            }
+        }
+
+        dto.setReferenceUrls(referenceUrls);
+
+        return createMeeting(dto);
+    }
+
     @Transactional
     public Long createMeeting(MeetingDto.MeetingCreateDto meetingCreateDto) {
+        // 프로젝트 조회
+        Project project = projectRepo.findById(meetingCreateDto.getProjectId())
+                .orElseThrow(() -> new BadRequestException("Project not found"));
+
         // 회의 저장
-        Meeting meeting = new Meeting(meetingCreateDto.getMeetingTitle(), meetingCreateDto.getMeetingDate(), meetingCreateDto.getMeetingTime());
+        Meeting meeting = new Meeting(
+                project,
+                meetingCreateDto.getMeetingTitle(),
+                meetingCreateDto.getMeetingDate(),
+                meetingCreateDto.getMeetingTime()
+        );
         meetingRepo.save(meeting);
 
         // 회의 참여자 저장
