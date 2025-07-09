@@ -14,4 +14,7 @@ public interface UserProjectRepo extends JpaRepository<UserProject, UserProjectI
 
     Optional<UserProject> findByUserAndProject(User user, Project project);
     List<UserProject> findByProjectId(Long projectId);
+
+    // 프로젝트에 속한 유저 수 세기 위한 메서드
+    int countByProject(Project project);
 }

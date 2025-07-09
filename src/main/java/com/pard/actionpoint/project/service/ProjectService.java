@@ -119,7 +119,7 @@ public class ProjectService {
         userProjectRepo.delete(userProject);
 
         // 인원 수 감소
-        int updatedCount = project.getProjectUserCnt() - 1;
+        int updatedCount = userProjectRepo.countByProject(project);
         project.setProjectUserCnt(updatedCount);
 
         // 0명이면 프로젝트 삭제
