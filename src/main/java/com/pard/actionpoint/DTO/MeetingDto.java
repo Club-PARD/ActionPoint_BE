@@ -1,5 +1,6 @@
 package com.pard.actionpoint.DTO;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,8 +23,13 @@ public class MeetingDto {
         private Long writerId;
 
         private List<String> agendaTitles;
+
+        @Schema(hidden = true) // 프론트가 보내지 않아도 되는 필드
         private List<String> referenceUrls;
     }
+
+    // 회의록 생성 단계에서 프론트가 받아야 하는 값들
+
 
     @Getter @Setter @NoArgsConstructor @AllArgsConstructor
     public class AgendaDetailUpdateDto{

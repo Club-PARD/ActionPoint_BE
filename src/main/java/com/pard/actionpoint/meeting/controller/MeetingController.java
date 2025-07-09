@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -24,22 +25,22 @@ public class MeetingController {
     @PostMapping("/create/title")
     @Operation(summary = "[1단계] 제목, 날짜, 시간, 참여자, 서기, 파일, 회의 안건 저장",
             description = "데이터와 파일을 같이 받아와야 해서 RequestPart를 사용했습니다. 잘 부탁드립니다.")
-    public ResponseEntity<Long> createMeeting(
+    public ResponseEntity<List<Long>> createMeeting(
             @RequestPart("data") MeetingDto.MeetingCreateDto dto,
             @RequestPart("files") List<MultipartFile> files
     ) {
-        Long meetingId = meetingService.createMeeting(dto, files);
-        return ResponseEntity.ok(meetingId);
+        List<Long> agendaIds = meetingService.createMeeting(dto, files != null ? files : new ArrayList<>());
+        return ResponseEntity.ok(agendaIds);
     }
 
     // 2단계: 안건 상세 내용 저장
     @PatchMapping("/create/agendas")
     @Operation(summary = "[2단계] 회의록 저장")
-    public ResponseEntity<?> updateAgendas(
+    public ResponseEntity<Long> updateAgendas(
             @RequestBody List<MeetingDto.AgendaDetailUpdateDto> agendas
     ) {
-        meetingService.updateAgendaDetails(agendas);
-        return ResponseEntity.ok().build();
+        Long meetingId = meetingService.updateAgendaDetails(agendas);
+        return ResponseEntity.ok(meetingId);
     }
 
     // 3단계: 액션포인트 및 최종 요약 저장

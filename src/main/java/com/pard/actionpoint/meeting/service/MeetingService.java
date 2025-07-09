@@ -46,69 +46,71 @@ public class MeetingService {
     // (회의록 작성) 첫 페이지
     // 참고자료 S3 처리
     @Transactional
-    public Long createMeeting(MeetingDto.MeetingCreateDto dto, List<MultipartFile> files) {
-        List <String> referenceUrls = new ArrayList<>();
-
+    public List<Long> createMeeting(MeetingDto.MeetingCreateDto dto, List<MultipartFile> files) {
+        List<String> referenceUrls = new ArrayList<>();
         for (MultipartFile file : files) {
             try {
                 String url = s3Uploader.upload(file, "meeting/reference");
                 referenceUrls.add(url);
             } catch (IOException e) {
-                throw new RuntimeException("S3 파일 업로드 실패", e); // 혹은 커스텀 예외 처리
+                throw new RuntimeException("S3 파일 업로드 실패", e);
             }
         }
-
         dto.setReferenceUrls(referenceUrls);
 
-        return createMeeting(dto);
-    }
-
-    @Transactional
-    public Long createMeeting(MeetingDto.MeetingCreateDto meetingCreateDto) {
-        // 프로젝트 조회
-        Project project = projectRepo.findById(meetingCreateDto.getProjectId())
+        // 회의 저장
+        Project project = projectRepo.findById(dto.getProjectId())
                 .orElseThrow(() -> new BadRequestException("Project not found"));
 
-        // 회의 저장
         Meeting meeting = new Meeting(
                 project,
-                meetingCreateDto.getMeetingTitle(),
-                meetingCreateDto.getMeetingDate(),
-                meetingCreateDto.getMeetingTime()
+                dto.getMeetingTitle(),
+                dto.getMeetingDate(),
+                dto.getMeetingTime()
         );
         meetingRepo.save(meeting);
 
         // 회의 참여자 저장
-        for (Long userId : meetingCreateDto.getParticipantIds()){
-            boolean isWriter = userId.equals(meetingCreateDto.getWriterId());
+        for (Long userId : dto.getParticipantIds()) {
+            boolean isWriter = userId.equals(dto.getWriterId());
             User user = userRepo.findById(userId)
-                            .orElseThrow(() -> new BadRequestException("User not found"));
-
+                    .orElseThrow(() -> new BadRequestException("User not found"));
             meetingParticipantRepo.save(new MeetingParticipant(user, meeting, isWriter));
         }
 
-        // 회의 안건 제목 저장
-        for (String title : meetingCreateDto.getAgendaTitles()){
-            agendaRepo.save(new Agenda(title, meeting));
+        // 안건 저장 및 ID 리스트 수집
+        List<Long> agendaIds = new ArrayList<>();
+        for (String title : dto.getAgendaTitles()) {
+            Agenda agenda = agendaRepo.save(new Agenda(title, meeting));
+            agendaIds.add(agenda.getId());
         }
 
-        // 회의 참고 자료 저장 (S3 URL)
-        for (String url : meetingCreateDto.getReferenceUrls()) {
+        // 참고자료 저장
+        for (String url : dto.getReferenceUrls()) {
             meetingReferenceRepo.save(new MeetingReference(meeting, url));
         }
 
-        return meeting.getId();
+        return agendaIds; // 👉 프론트에 이 리스트만 반환
     }
+
 
     // (회의록 작성) 두번째 페이지
     // 안건에 대한 회의록 업데이트
     @Transactional
-    public void updateAgendaDetails(List<MeetingDto.AgendaDetailUpdateDto> agendaList){
+    public Long updateAgendaDetails(List<MeetingDto.AgendaDetailUpdateDto> agendaList){
+        Long meetingId = null;
+
         for(MeetingDto.AgendaDetailUpdateDto agendaDto : agendaList){
             Agenda agenda = agendaRepo.findById(agendaDto.getAgendaId())
                     .orElseThrow(() -> new RuntimeException("Agenda not found"));
             agenda.setAgendaContent(agendaDto.getAgendaContent());
+
+            if(meetingId == null){
+                meetingId = agenda.getId(); // 첫번째 아젠다를 처리할 때 meetingId 한번만 가져옴
+            }
         }
+
+        return meetingId;
     }
 
     // (회의록 작성) 끝 페이지
