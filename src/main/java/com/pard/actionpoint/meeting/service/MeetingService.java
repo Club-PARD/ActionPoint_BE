@@ -91,15 +91,27 @@ public class MeetingService {
     // 안건에 대한 회의록 업데이트
     @Transactional
     public Long updateAgendaDetails(List<MeetingDto.AgendaDetailUpdateDto> agendaList){
+        if (agendaList == null || agendaList.isEmpty()) {
+            throw new BadRequestException("업데이트할 아젠다가 없습니다.");
+        }
+
         Long meetingId = null;
 
-        for(MeetingDto.AgendaDetailUpdateDto agendaDto : agendaList){
+        for (MeetingDto.AgendaDetailUpdateDto agendaDto : agendaList) {
+            if (agendaDto.getAgendaId() == null) {
+                throw new BadRequestException("agendaId가 누락되었습니다.");
+            }
+
             Agenda agenda = agendaRepo.findById(agendaDto.getAgendaId())
                     .orElseThrow(() -> new RuntimeException("Agenda not found"));
             agenda.setAgendaContent(agendaDto.getAgendaContent());
 
-            if(meetingId == null){
-                meetingId = agenda.getMeeting().getId(); // 첫번째 아젠다를 처리할 때 meetingId 한번만 가져옴
+            if (meetingId == null) {
+                Meeting meeting = agenda.getMeeting();
+                if (meeting == null) {
+                    throw new RuntimeException("Meeting 정보가 없습니다.");
+                }
+                meetingId = meeting.getId();
             }
         }
 
