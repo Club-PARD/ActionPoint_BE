@@ -135,7 +135,7 @@ public class ProjectService {
         Project project = projectRepo.findById(projectId)
                 .orElseThrow(() -> new BadRequestException("Project not found"));
 
-        List<Meeting> meetings = meetingRepo.findMeetingsWithUserActionPoints(projectId, userId);
+        List<Meeting> meetings = meetingRepo.findByProjectId(projectId);
 
         List<ProjectDetailDto.MeetingListDto> meetingDtos = meetings.stream().map(meeting -> {
             List<ActionPoint> actionPoints = meeting.getActionPoints();

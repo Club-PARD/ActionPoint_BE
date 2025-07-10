@@ -29,14 +29,10 @@ public class MeetingDto {
     }
 
     // 회의록 생성 단계에서 프론트가 받아야 하는 값들
+    @Getter @Setter @NoArgsConstructor @AllArgsConstructor
     public static class AgendaDetailUpdateResDto{
         private Long agendaId;
         private String agendaTitle;
-
-        public AgendaDetailUpdateResDto(Long id, String agendaTitle) {
-            this.agendaId = id;
-            this.agendaTitle = agendaTitle;
-        }
     }
 
     @Getter @Setter @NoArgsConstructor @AllArgsConstructor
