@@ -19,8 +19,8 @@ public class MeetingDto {
         private Date meetingDate;
         private String meetingTime;
 
-        private List<Long> participantIds;
-        private Long writerId;
+        private String meetingParticipants;
+        private Long meetingWriterId;
 
         private List<String> agendaTitles;
 
@@ -29,8 +29,6 @@ public class MeetingDto {
     }
 
     // 회의록 생성 단계에서 프론트가 받아야 하는 값들
-
-
     @Getter @Setter @NoArgsConstructor @AllArgsConstructor
     public class AgendaDetailUpdateDto{
         private Long agendaId;
@@ -57,8 +55,8 @@ public class MeetingDto {
         private String meetingTitle;
         private Date meetingDate;
         private String meetingTime;
-        private UserDto writer;
-        private List<UserDto> participants;
+        private UserDto meetingWriter;
+        private String meetingParticipants;
         private List<String> referenceUrls;
         private List<AgendaDto> agendas;
         private List<ActionPointDto> actionPoints;

@@ -3,9 +3,9 @@ package com.pard.actionpoint.meeting.domain;
 import com.pard.actionpoint.DTO.MeetingDto;
 import com.pard.actionpoint.actionPoint.domain.ActionPoint;
 import com.pard.actionpoint.agenda.domain.Agenda;
-import com.pard.actionpoint.meetingParticipant.domain.MeetingParticipant;
 import com.pard.actionpoint.meetingReference.domain.MeetingReference;
 import com.pard.actionpoint.project.domain.Project;
+import com.pard.actionpoint.user.domain.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -23,14 +23,16 @@ public class Meeting {
     private String meetingTitle;
     private Date meetingDate;
     private String meetingTime;
+    private String meetingParticipants;
     private String meetingLastSummary;
+
+    @OneToOne
+    @JoinColumn(name = "meeting_writer_id")
+    private User writer;
 
     @ManyToOne
     @JoinColumn(name = "project_id")
     private Project project;
-
-    @OneToMany(mappedBy = "meeting", cascade = CascadeType.REMOVE)
-    private List<MeetingParticipant> participants = new ArrayList<>();
 
     @OneToMany(mappedBy = "meeting", cascade = CascadeType.REMOVE)
     private List<Agenda> agendas = new ArrayList<>();
@@ -41,10 +43,12 @@ public class Meeting {
     @OneToMany(mappedBy = "meeting", cascade = CascadeType.REMOVE)
     private List<MeetingReference> meetingReferences = new ArrayList<>();
 
-    public Meeting(Project project, String meetingTitle, Date meetingDate, String meetingTime) {
+    public Meeting(Project project, String meetingTitle, Date meetingDate, String meetingTime, String meetingParticipants, User writer) {
         this.project = project;
         this.meetingTitle = meetingTitle;
         this.meetingDate = meetingDate;
         this.meetingTime = meetingTime;
+        this.meetingParticipants = meetingParticipants;
+        this.writer = writer;
     }
 }

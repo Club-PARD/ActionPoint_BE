@@ -9,9 +9,6 @@ import com.pard.actionpoint.common.s3.S3Uploader;
 import com.pard.actionpoint.global.exception.BadRequestException;
 import com.pard.actionpoint.meeting.domain.Meeting;
 import com.pard.actionpoint.meeting.repo.MeetingRepo;
-import com.pard.actionpoint.meetingParticipant.domain.MeetingParticipant;
-import com.pard.actionpoint.meetingParticipant.domain.MeetingParticipantId;
-import com.pard.actionpoint.meetingParticipant.repo.MeetingParticipantRepo;
 import com.pard.actionpoint.meetingReference.domain.MeetingReference;
 import com.pard.actionpoint.meetingReference.repo.MeetingReferenceRepo;
 import com.pard.actionpoint.project.domain.Project;
@@ -35,7 +32,6 @@ import java.util.stream.Collectors;
 public class MeetingService {
     private final UserRepo userRepo;
     private final MeetingRepo meetingRepo;
-    private final MeetingParticipantRepo meetingParticipantRepo;
     private final AgendaRepo agendaRepo;
     private final MeetingReferenceRepo meetingReferenceRepo;
     private final ActionPointRepo actionPointRepo;
@@ -62,21 +58,18 @@ public class MeetingService {
         Project project = projectRepo.findById(dto.getProjectId())
                 .orElseThrow(() -> new BadRequestException("Project not found"));
 
+        User writer = userRepo.findById(dto.getMeetingWriterId())
+                .orElseThrow(() -> new BadRequestException("User not found"));
+
         Meeting meeting = new Meeting(
                 project,
                 dto.getMeetingTitle(),
                 dto.getMeetingDate(),
-                dto.getMeetingTime()
+                dto.getMeetingTime(),
+                dto.getMeetingParticipants(),
+                writer
         );
         meetingRepo.save(meeting);
-
-        // 회의 참여자 저장
-        for (Long userId : dto.getParticipantIds()) {
-            boolean isWriter = userId.equals(dto.getWriterId());
-            User user = userRepo.findById(userId)
-                    .orElseThrow(() -> new BadRequestException("User not found"));
-            meetingParticipantRepo.save(new MeetingParticipant(user, meeting, isWriter));
-        }
 
         // 안건 저장 및 ID 리스트 수집
         List<Long> agendaIds = new ArrayList<>();
@@ -163,28 +156,19 @@ public class MeetingService {
         dto.setMeetingTitle(meeting.getMeetingTitle());
         dto.setMeetingDate(meeting.getMeetingDate());
         dto.setMeetingTime(meeting.getMeetingTime());
+        dto.setMeetingParticipants(meeting.getMeetingParticipants());
         dto.setMeetingLastSummary(meeting.getMeetingLastSummary());
 
         // 서기
-        MeetingParticipant writer = meetingParticipantRepo.findByMeeting(meeting).stream()
-                .filter(MeetingParticipant::getIsWriter)
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("Writer not found"));
-
-        MeetingDto.MeetingDetailDto.UserDto writerDto = new MeetingDto.MeetingDetailDto.UserDto();
-        writerDto.setUserId(writer.getUser().getId());
-        writerDto.setUserName(writer.getUser().getUserName());
-        dto.setWriter(writerDto);
-
-        // 참석자
-        List<MeetingDto.MeetingDetailDto.UserDto> participants = meetingParticipantRepo.findByMeeting(meeting).stream()
-                .map(mp -> {
-                    MeetingDto.MeetingDetailDto.UserDto p = new MeetingDto.MeetingDetailDto.UserDto();
-                    p.setUserId(mp.getUser().getId());
-                    p.setUserName(mp.getUser().getUserName());
-                    return p;
-                }).collect(Collectors.toList());
-        dto.setParticipants(participants);
+        User writer = meeting.getWriter();
+        if(writer != null){
+            MeetingDto.MeetingDetailDto.UserDto writerDto = new MeetingDto.MeetingDetailDto.UserDto();
+            writerDto.setUserId(writer.getId());
+            writerDto.setUserName(writer.getUserName());
+            dto.setMeetingWriter(writerDto);
+        } else {
+            dto.setMeetingWriter(null);
+        }
 
         // 참고자료
         List<String> urls = meetingReferenceRepo.findByMeeting(meeting).stream()
