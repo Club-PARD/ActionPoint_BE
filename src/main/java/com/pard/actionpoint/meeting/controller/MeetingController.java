@@ -32,12 +32,12 @@ public class MeetingController {
                     + "Req : {프로젝트 ID, 회의 제목, 회의 날짜, 회의 시간, 참석자, 작성자 유저 ID, <List> 회의안건 제목}, {<List> 파일}<br>"
                     + "Res : <List> 회의안건 ID"
     )
-    public ResponseEntity<List<Long>> createMeeting(
+    public ResponseEntity<List<MeetingDto.AgendaDetailUpdateResDto>> createMeeting(
             @RequestPart("data") MeetingDto.MeetingCreateDto dto,
             @RequestPart("files") List<MultipartFile> files
     ) {
-        List<Long> agendaIds = meetingService.createMeeting(dto, files != null ? files : new ArrayList<>());
-        return ResponseEntity.ok(agendaIds);
+        List<MeetingDto.AgendaDetailUpdateResDto> agendaDtos = meetingService.createMeeting(dto, files != null ? files : new ArrayList<>());
+        return ResponseEntity.ok(agendaDtos);
     }
 
     // 2단계: 안건 상세 내용 저장

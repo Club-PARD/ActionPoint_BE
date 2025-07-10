@@ -42,7 +42,7 @@ public class MeetingService {
     // (회의록 작성) 첫 페이지
     // 참고자료 S3 처리
     @Transactional
-    public List<Long> createMeeting(MeetingDto.MeetingCreateDto dto, List<MultipartFile> files) {
+    public List<MeetingDto.AgendaDetailUpdateResDto> createMeeting(MeetingDto.MeetingCreateDto dto, List<MultipartFile> files) {
         List<String> referenceUrls = new ArrayList<>();
         for (MultipartFile file : files) {
             try {
@@ -72,10 +72,10 @@ public class MeetingService {
         meetingRepo.save(meeting);
 
         // 안건 저장 및 ID 리스트 수집
-        List<Long> agendaIds = new ArrayList<>();
+        List<MeetingDto.AgendaDetailUpdateResDto> agendaDtos = new ArrayList<>();
         for (String title : dto.getAgendaTitles()) {
             Agenda agenda = agendaRepo.save(new Agenda(title, meeting));
-            agendaIds.add(agenda.getId());
+            agendaDtos.add(new MeetingDto.AgendaDetailUpdateResDto(agenda.getId(), agenda.getAgendaTitle()));
         }
 
         // 참고자료 저장
@@ -83,7 +83,7 @@ public class MeetingService {
             meetingReferenceRepo.save(new MeetingReference(meeting, url));
         }
 
-        return agendaIds; // 👉 프론트에 이 리스트만 반환
+        return agendaDtos; // 👉 프론트에 이 리스트만 반환
     }
 
 
