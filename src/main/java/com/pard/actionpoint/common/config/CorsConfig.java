@@ -18,9 +18,9 @@ public class CorsConfig {
         CorsConfiguration config = new CorsConfiguration();
 
         config.setAllowCredentials(true);
-        config.setAllowedOrigins(Arrays.asList(
+        config.setAllowedOrigins(List.of(
                 "http://localhost:3000",
-                "https://action-point-fe-git-main-actionpoint.vercel.app/"
+                "https://action-point-fe-git-main-actionpoint.vercel.app"
         ));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowedMethods(List.of("*"));
