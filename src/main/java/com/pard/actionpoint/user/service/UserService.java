@@ -73,6 +73,7 @@ public class UserService {
                 Meeting latestMeeting = recentMeetings.get(0);
                 if (latestMeeting != null) {
                     projectInfo.setLatestMeetingId(latestMeeting.getId());
+                    projectInfo.setMeetingLastSummary(latestMeeting.getMeetingLastSummary());
 
                     // 유저의 액션 포인트
                     List<ActionPoint> actionPoints = actionPointRepo.findByUserIdAndMeetingId(userId, latestMeeting.getId());

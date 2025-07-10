@@ -33,7 +33,7 @@ public class UserController {
     @Operation(summary = "[메인 대시보드 페이지]",
             description = "로그인 이후 화면인 메인 대시보드 페이지에 대한 정보를 모두 전달합니다.<br>" +
                     "Req : 유저 ID (Header 'X-USER-ID')<br>" +
-                    "Res : <List> {프로젝트 ID, 프로젝트 이름, 최신 회의 ID, 최신 회의 이름, <List> {액션포인트 내용, 유저 ID, 완료 여부}, 액션 포인트 개수}")
+                    "Res : <List> {프로젝트 ID, 프로젝트 이름, 최신 회의 ID, 최신 회의 이름, 추가 논의, <List> {액션포인트 내용, 유저 ID, 완료 여부}, 액션 포인트 개수}")
     public ResponseEntity<DashboardDto> getDashboard(
             @RequestHeader("X-USER-ID") Long userId) {
         DashboardDto dto = userService.getDashboard(userId);

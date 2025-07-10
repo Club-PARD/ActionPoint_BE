@@ -14,6 +14,7 @@ public class DashboardDto {
         private String projectName;
         private Long latestMeetingId;
         private String latestMeetingTitle;
+        private String meetingLastSummary;
         private List<ActionPointDto> myActionPoints;
         private int myActionPointsCount;
     }
