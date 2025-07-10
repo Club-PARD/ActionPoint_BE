@@ -48,40 +48,55 @@ public class UserService {
 
     // 대시보드 페이지 이동
     @Transactional
-    public DashboardDto getDashboard(Long userId){
+    public DashboardDto getDashboard(Long userId) {
         List<Project> projects = projectRepo.findProjectsByUserId(userId);
+        if (projects == null) projects = Collections.emptyList();
+
         List<DashboardDto.ProjectInfoDto> projectInfoDtos = new ArrayList<>();
 
         for (Project project : projects) {
+            if (project == null) continue;
+
             DashboardDto.ProjectInfoDto projectInfo = new DashboardDto.ProjectInfoDto();
             projectInfo.setProjectId(project.getId());
             projectInfo.setProjectName(project.getProjectName());
 
             // 가장 최근 회의
-            List<Meeting> recentMeetings = meetingRepo.findRecentMeetingByProjectId(project.getId(), (Pageable) PageRequest.of(0, 1));
-            if(!recentMeetings.isEmpty()){
+            List<Meeting> recentMeetings = meetingRepo.findRecentMeetingByProjectId(
+                    project.getId(),
+                    (Pageable) PageRequest.of(0, 1)
+            );
+            if (recentMeetings == null) recentMeetings = Collections.emptyList();
+
+            if (!recentMeetings.isEmpty()) {
                 Meeting latestMeeting = recentMeetings.get(0);
-                projectInfo.setLatestMeetingId(latestMeeting.getId());
+                if (latestMeeting != null) {
+                    projectInfo.setLatestMeetingId(latestMeeting.getId());
 
-                // 해당 회의에 대한 유저의 액션 포인트
-                List<ActionPoint> actionPoints = actionPointRepo.findByUserIdAndMeetingId(userId, latestMeeting.getId());
-                List<DashboardDto.ActionPointDto> apDtos = (actionPoints == null) ? List.of() :
-                        actionPoints.stream()
-                                .filter(ap ->
-                                        ap != null &&
-                                                ap.getUser() != null &&
-                                                ap.getUser().getId() != null &&
-                                                ap.getUser().getId().equals(userId)
-                                )
-                                .map(ap -> new DashboardDto.ActionPointDto(
-                                        ap.getId(),
-                                        ap.getActionContent(),
-                                        ap.getIsFinished()))
-                                .toList();
+                    // 유저의 액션 포인트
+                    List<ActionPoint> actionPoints = actionPointRepo.findByUserIdAndMeetingId(userId, latestMeeting.getId());
+                    if (actionPoints == null) actionPoints = Collections.emptyList();
 
-                projectInfo.setMyActionPoints(apDtos);
-                projectInfo.setMyActionPointsCount(apDtos.size());
+                    List<DashboardDto.ActionPointDto> apDtos = actionPoints.stream()
+                            .filter(ap -> ap != null && ap.getUser() != null && ap.getUser().getId() != null)
+                            .filter(ap -> ap.getUser().getId().equals(userId))
+                            .map(ap -> new DashboardDto.ActionPointDto(
+                                    ap.getId(),
+                                    ap.getActionContent(),
+                                    ap.getIsFinished()
+                            ))
+                            .toList();
+
+                    projectInfo.setMyActionPoints(apDtos);
+                    projectInfo.setMyActionPointsCount(apDtos.size());
+                } else {
+                    // 회의 자체가 null인 경우
+                    projectInfo.setLatestMeetingId(null);
+                    projectInfo.setMyActionPoints(Collections.emptyList());
+                    projectInfo.setMyActionPointsCount(0);
+                }
             } else {
+                // 최근 회의가 없을 경우
                 projectInfo.setLatestMeetingId(null);
                 projectInfo.setMyActionPoints(Collections.emptyList());
                 projectInfo.setMyActionPointsCount(0);

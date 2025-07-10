@@ -17,7 +17,7 @@ public class ActionPointController {
     private final ActionPointService actionPointService;
 
     @PatchMapping("/{id}/toggle")
-    @Operation(summary = "[액션 포인트 상태 변환] 액션포인트 체크 표시에 대한 토글<br>",
+    @Operation(summary = "[액션 포인트 상태 변환] 액션포인트 체크 표시에 대한 토글",
             description =
                     "액션포인트의 체크 표시를 누를 때마다 상태를 변환합니다.<br>"
                     + "Req : 액션 포인트 ID<br>"
