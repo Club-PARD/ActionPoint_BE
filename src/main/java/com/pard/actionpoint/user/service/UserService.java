@@ -1,6 +1,7 @@
 package com.pard.actionpoint.user.service;
 
 import com.pard.actionpoint.DTO.DashboardDto;
+import com.pard.actionpoint.DTO.ProjectDetailDto;
 import com.pard.actionpoint.DTO.UserDto;
 import com.pard.actionpoint.actionPoint.domain.ActionPoint;
 import com.pard.actionpoint.actionPoint.repo.ActionPointRepo;
@@ -64,13 +65,19 @@ public class UserService {
 
                 // 해당 회의에 대한 유저의 액션 포인트
                 List<ActionPoint> actionPoints = actionPointRepo.findByUserIdAndMeetingId(userId, latestMeeting.getId());
-                List<DashboardDto.ActionPointDto> apDtos = actionPoints.stream().map(ap -> {
-                    DashboardDto.ActionPointDto apDto = new DashboardDto.ActionPointDto();
-                    apDto.setActionPointId(ap.getId());
-                    apDto.setActionContent(ap.getActionContent());
-                    apDto.setFinished(ap.getIsFinished());
-                    return apDto;
-                }).collect(Collectors.toList());
+                List<DashboardDto.ActionPointDto> apDtos = (actionPoints == null) ? List.of() :
+                        actionPoints.stream()
+                                .filter(ap ->
+                                        ap != null &&
+                                                ap.getUser() != null &&
+                                                ap.getUser().getId() != null &&
+                                                ap.getUser().getId().equals(userId)
+                                )
+                                .map(ap -> new DashboardDto.ActionPointDto(
+                                        ap.getId(),
+                                        ap.getActionContent(),
+                                        ap.getIsFinished()))
+                                .toList();
 
                 projectInfo.setMyActionPoints(apDtos);
                 projectInfo.setMyActionPointsCount(apDtos.size());

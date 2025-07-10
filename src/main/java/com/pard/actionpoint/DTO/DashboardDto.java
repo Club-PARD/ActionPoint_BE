@@ -22,6 +22,6 @@ public class DashboardDto {
     public static class ActionPointDto {
         private Long actionPointId;
         private String actionContent;
-        private boolean finished;
+        private boolean isFinished;
     }
 }
