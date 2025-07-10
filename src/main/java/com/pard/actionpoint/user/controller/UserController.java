@@ -22,8 +22,8 @@ public class UserController {
 
     @GetMapping("/profile")
     @Operation(summary = "[유저 정보 보기 (현재 접속용)]",
-            description = "현재 접속 중인 사용자의 정보를 반환합니다. 향후 프로필 기능이 나올 때 사용합니다.\n" +
-                    "Req : \n" +
+            description = "현재 접속 중인 사용자의 정보를 반환합니다. 향후 프로필 기능이 나올 때 사용합니다.<br>" +
+                    "Req : <br>" +
                     "Res : 유저 ID, 유저 이름, 유저 이메일")
     public ResponseEntity<UserDto.UserResDto> getUserProfile(@AuthenticationPrincipal User user){
         return ResponseEntity.ok(userService.read(user.getId()));
@@ -31,8 +31,8 @@ public class UserController {
 
     @GetMapping("/dashboard")
     @Operation(summary = "[메인 대시보드 페이지]",
-            description = "로그인 이후 화면인 메인 대시보드 페이지에 대한 정보를 모두 전달합니다.\n" +
-                    "Req : 유저 ID (Header 'X-USER-ID')\n" +
+            description = "로그인 이후 화면인 메인 대시보드 페이지에 대한 정보를 모두 전달합니다.<br>" +
+                    "Req : 유저 ID (Header 'X-USER-ID')<br>" +
                     "Res : <List> {프로젝트 ID, 프로젝트 이름, 최신 회의 ID, 최신 회의 이름, <List> {액션포인트 내용, 유저 ID, 완료 여부}, 액션 포인트 개수}")
     public ResponseEntity<DashboardDto> getDashboard(
             @RequestHeader("X-USER-ID") Long userId) {

@@ -20,7 +20,7 @@ public class LoginController {
 
     @PostMapping("/login")
     @Operation(summary = "[로그인]",
-            description = "로그인 처리에 대한 요청입니다.\n" +
+            description = "로그인 처리에 대한 요청입니다.<br>" +
                     "구글 로그인을 하게 되면 해당 유저의 정보를 저장하고 ID를 생성합니다.")
     public ResponseEntity<?> login(@RequestBody Map<String, String> body) {
         String idToken = body.get("idToken");
