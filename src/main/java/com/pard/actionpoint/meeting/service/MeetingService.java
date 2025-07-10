@@ -99,7 +99,7 @@ public class MeetingService {
             agenda.setAgendaContent(agendaDto.getAgendaContent());
 
             if(meetingId == null){
-                meetingId = agenda.getId(); // 첫번째 아젠다를 처리할 때 meetingId 한번만 가져옴
+                meetingId = agenda.getMeeting().getId(); // 첫번째 아젠다를 처리할 때 meetingId 한번만 가져옴
             }
         }
 
