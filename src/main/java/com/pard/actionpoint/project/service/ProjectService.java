@@ -130,20 +130,21 @@ public class ProjectService {
     }
 
     // 프로젝트 내부 페이지
+    @Transactional(readOnly = true)
     public ProjectDetailDto getProjectDetails(Long userId, Long projectId){
         Project project = projectRepo.findById(projectId)
                 .orElseThrow(() -> new BadRequestException("Project not found"));
 
-        // 최신순으로 회의록 제공
-        List<Meeting> meetings = meetingRepo.findAllByProjectIdOrderByMeetingDateDesc(projectId);
+        List<Meeting> meetings = meetingRepo.findMeetingsWithUserActionPoints(projectId, userId);
 
-        // 회의 내용
         List<ProjectDetailDto.MeetingListDto> meetingDtos = meetings.stream().map(meeting -> {
-            List<ActionPoint> userActionPoints = actionPointRepo.findByMeetingIdAndUserId(meeting.getId(), userId);
-            // 회의 별 액션포인트 내용
-            List<ProjectDetailDto.ActionPointDto> actionPointDtos = userActionPoints.stream().map(ap ->
-                    new ProjectDetailDto.ActionPointDto(ap.getId(), ap.getActionContent(), ap.getIsFinished())
-            ).toList();
+            List<ProjectDetailDto.ActionPointDto> actionPointDtos = meeting.getActionPoints().stream()
+                    .filter(ap -> ap.getUser().getId().equals(userId)) // 혹시 모르니 필터 한 번 더
+                    .map(ap -> new ProjectDetailDto.ActionPointDto(
+                            ap.getId(),
+                            ap.getActionContent(),
+                            ap.getIsFinished()))
+                    .toList();
 
             return new ProjectDetailDto.MeetingListDto(
                     meeting.getId(),
