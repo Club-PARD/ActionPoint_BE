@@ -17,7 +17,12 @@ public class ActionPointController {
     private final ActionPointService actionPointService;
 
     @PatchMapping("/{id}/toggle")
-    @Operation(summary = "액션포인트 토글")
+    @Operation(summary = "[액션 포인트 상태 변환] 액션포인트 체크 표시에 대한 토글\n",
+            description =
+                    "액션포인트의 체크 표시를 누를 때마다 상태를 변환합니다.\n"
+                    + "Req : 액션 포인트 ID\n"
+                    + "Res : "
+    )
     public ResponseEntity<Void> toggleActionPoint(@PathVariable Long id) {
         actionPointService.toggleActionPoint(id);
         return ResponseEntity.ok().build();

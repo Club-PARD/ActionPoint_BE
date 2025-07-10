@@ -18,9 +18,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.time.LocalDate;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -167,13 +166,40 @@ public class ProjectService {
                     .map(User::getUserName)
                     .orElse("Unknown");
 
+            List<Meeting> meetings = meetingRepo.findByProject(project);
+
+            int projectStatus;
+            if (meetings.isEmpty()) {
+                projectStatus = 1; // 회의가 없음
+            } else {
+                // 가장 최근 회의 날짜
+                Date lastMeetingDate = meetings.stream()
+                        .map(Meeting::getMeetingDate)
+                        .max(Date::compareTo)
+                        .orElse(null);
+
+                if (isBeforeOneMonth(lastMeetingDate)) {
+                    projectStatus = 2; // 마지막 회의가 한 달 전보다 이전
+                } else {
+                    projectStatus = 0; // 정상
+                }
+            }
+
             return new ProjectDto.ProjectListDto(
                     project.getId(),
                     project.getProjectName(),
                     ownerName,
                     project.getProjectUserCnt() - 1, // 본인 제외
-                    project.getProjectStatus()
+                    projectStatus
             );
         }).collect(Collectors.toList());
+    }
+
+    private boolean isBeforeOneMonth(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.MONTH, -1);
+        Date oneMonthAgo = calendar.getTime();
+
+        return date.before(oneMonthAgo);
     }
 }

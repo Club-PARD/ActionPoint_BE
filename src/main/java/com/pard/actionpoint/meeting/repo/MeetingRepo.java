@@ -1,6 +1,7 @@
 package com.pard.actionpoint.meeting.repo;
 
 import com.pard.actionpoint.meeting.domain.Meeting;
+import com.pard.actionpoint.project.domain.Project;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -17,4 +18,6 @@ public interface MeetingRepo extends JpaRepository<Meeting, Long> {
 
     // 회의 Detail
     Optional<Meeting> findById(Long id);
+
+    List<Meeting> findByProject(Project project);
 }

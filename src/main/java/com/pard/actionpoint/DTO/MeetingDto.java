@@ -44,8 +44,10 @@ public class MeetingDto {
 
     @Getter @Setter @NoArgsConstructor @AllArgsConstructor
     public static class ActionPointDto{
+        private Long actionPointId;
         private String actionContent;
         private Long userId;
+        private String userName;
         private boolean isFinished;
     }
 
