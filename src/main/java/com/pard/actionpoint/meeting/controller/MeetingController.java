@@ -21,6 +21,16 @@ public class MeetingController {
     private final MeetingService meetingService;
     private final UserProjectService userProjectService;
 
+    @PostMapping("/{projectId}/pass-id")
+    @Operation(summary = "[회의록 페이지]",
+            description = "projectId를 넘기고 받습니다.<br>" +
+                    "회의록 리스트 페이지에서 회의록 페이지로 넘어갈 때 사용하시면 됩니다.<br>" +
+                    "Req : 프로젝트 ID (Path URL)<br>" +
+                    "Res : 프로젝트 ID")
+    public ResponseEntity<Long> passProjectId(@PathVariable Long projectId) {
+        return ResponseEntity.ok(projectId); // 받은 값을 그대로 반환
+    }
+
     // 1단계: 회의 생성
     @PostMapping("/create/title")
     @Operation(summary = "[회의록 작성 1단계] 제목, 날짜, 시간, 참여자, 서기, 파일, 회의 안건 저장",
