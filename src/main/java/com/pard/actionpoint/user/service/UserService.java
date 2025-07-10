@@ -13,10 +13,11 @@ import com.pard.actionpoint.user.domain.User;
 import com.pard.actionpoint.user.repo.UserRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.awt.print.Pageable;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -64,7 +65,7 @@ public class UserService {
             // 가장 최근 회의
             List<Meeting> recentMeetings = meetingRepo.findRecentMeetingByProjectId(
                     project.getId(),
-                    (Pageable) PageRequest.of(0, 1)
+                    PageRequest.of(0, 1)
             );
             if (recentMeetings == null) recentMeetings = Collections.emptyList();
 

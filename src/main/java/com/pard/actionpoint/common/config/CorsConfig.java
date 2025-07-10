@@ -20,7 +20,7 @@ public class CorsConfig {
         config.setAllowCredentials(true);
         config.setAllowedOrigins(Arrays.asList(
                 "http://localhost:3000",
-                "https://action-point-fe-git-main-oksk66855-9984s-projects.vercel.app"
+                "https://action-point-fe-git-main-actionpoint.vercel.app/"
         ));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowedMethods(List.of("*"));

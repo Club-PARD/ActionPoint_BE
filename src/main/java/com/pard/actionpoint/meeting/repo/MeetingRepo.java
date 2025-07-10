@@ -2,11 +2,11 @@ package com.pard.actionpoint.meeting.repo;
 
 import com.pard.actionpoint.meeting.domain.Meeting;
 import com.pard.actionpoint.project.domain.Project;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.awt.print.Pageable;
 import java.util.List;
 import java.util.Optional;
 
