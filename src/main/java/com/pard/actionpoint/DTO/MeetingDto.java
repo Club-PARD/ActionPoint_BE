@@ -36,7 +36,7 @@ public class MeetingDto {
     }
 
     @Getter @Setter @NoArgsConstructor @AllArgsConstructor
-    public class AgendaDetailUpdateDto{
+    public static class AgendaDetailUpdateDto{
         private Long agendaId;
         private String agendaContent;
     }
