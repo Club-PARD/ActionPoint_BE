@@ -1,7 +1,6 @@
 package com.pard.actionpoint.user.domain;
 
 import com.pard.actionpoint.actionPoint.domain.ActionPoint;
-import com.pard.actionpoint.meetingParticipant.domain.MeetingParticipant;
 import com.pard.actionpoint.project.domain.Project;
 import com.pard.actionpoint.userProject.domain.UserProject;
 import jakarta.persistence.*;
@@ -31,9 +30,6 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<UserProject> userProjects = new ArrayList<>();
-
-    @OneToMany(mappedBy = "user")
-    private List<MeetingParticipant> meetingParticipants = new ArrayList<>();
 
     @OneToMany(mappedBy = "user")
     private List<ActionPoint> actionPoints = new ArrayList<>();
