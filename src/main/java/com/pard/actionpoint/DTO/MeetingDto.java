@@ -42,7 +42,7 @@ public class MeetingDto {
     }
 
     @Getter @Setter @NoArgsConstructor @AllArgsConstructor
-    public class MeetingSummaryDto{
+    public static class MeetingSummaryDto{
         private String meetingLastSummary;
     }
 
