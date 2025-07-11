@@ -1,4 +1,7 @@
 <div align="center">
+    <img src="https://readme-typing-svg.demolab.com?font=Poppins&size=40&duration=3000&pause=2300&color=6BA1FF&center=true&random=false&height=80&lines=Action Point" alt="Typing SVG" />
+
+<div align="center">
 
 <img src="images/LogoTitle.jpg" width="100%" alt="ActionPoint Title Image"/>
 <br />
