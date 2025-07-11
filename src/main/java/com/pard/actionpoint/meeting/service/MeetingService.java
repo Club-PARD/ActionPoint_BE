@@ -152,6 +152,12 @@ public class MeetingService {
 
         // 기본 회의 정보
         MeetingDto.MeetingDetailDto dto = new MeetingDto.MeetingDetailDto();
+
+        // 다음 페이지 라우팅을 위한 프로젝트 ID 넘김
+        if(meeting.getProject() != null){
+            dto.setProjectId(meeting.getProject().getId());
+        }
+
         dto.setMeetingId(meeting.getId());
         dto.setMeetingTitle(meeting.getMeetingTitle());
         dto.setMeetingDate(meeting.getMeetingDate());

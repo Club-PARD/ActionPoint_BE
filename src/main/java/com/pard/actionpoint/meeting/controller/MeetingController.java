@@ -106,9 +106,9 @@ public class MeetingController {
     // 회의 상세 조회
     @GetMapping("/{meetingId}")
     @Operation(summary = "[회의록 조회]",
-            description = "저장된 회의록에 대한 모든 정보를 넘깁니다. 수정 부분에서 사용됩니다.<br>" +
+            description = "저장된 회의록에 대한 모든 정보를 넘깁니다. 수정 혹은 조회 부분에서 사용됩니다.<br>" +
                     "Req : 회의 ID (URL Path)<br>" +
-                    "Res : 회의 ID, 회의 제목, 회의 날짜, 회의 시간, 작성자 ID, 작성자 이름, 참석자, <List> {참고자료 URL},\n" +
+                    "Res : 프로젝트 ID, 회의 ID, 회의 제목, 회의 날짜, 회의 시간, 작성자 ID, 작성자 이름, 참석자, <List> {참고자료 URL},\n" +
                     "<List> {회의안건 ID, 회의 안건 제목, 회의 안건 내용}, <List> {액션포인트 ID, 액션포인트 내용, 유저 ID, 유저 이름, 완료 여부}, 추가 안건")
     public ResponseEntity<MeetingDto.MeetingDetailDto> getMeetingDetail(@PathVariable Long meetingId) {
         MeetingDto.MeetingDetailDto dto = meetingService.getMeetingDetail(meetingId);

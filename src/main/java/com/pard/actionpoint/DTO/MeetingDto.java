@@ -57,6 +57,7 @@ public class MeetingDto {
 
     @Getter @Setter @NoArgsConstructor @AllArgsConstructor
     public static class MeetingDetailDto {
+        private Long projectId;
         private Long meetingId;
         private String meetingTitle;
         private Date meetingDate;
