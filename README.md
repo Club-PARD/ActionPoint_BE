@@ -80,7 +80,7 @@
   → 대시보드 및 프로젝트 내에서 체크리스트 형태로 확인
 - **달성도 확인 기능**  
   → 진행 상황을 그래프 및 응원 문구로 시각화
-
+g
 ---
 
 ## 🚀 배포 링크
@@ -124,3 +124,11 @@
 
 <!-- CONTACT -->
 <h2 id="team"> 팀원 소개</h2>
+
+|                                     🪽 김제람 🪽                                      |                                     ❣️ 김사랑 ❣️                                      |                                     🐻 조상근 🐻                                      |
+|:----------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------:|
+|                                         PM                                         |                                      Designer                                      |                                      Backend                                       |
+| <img src="images/제람.jpeg" style="width: 150px; height: 150px; object-fit: cover;"> | <img src="images/사랑.jpg" style="width: 150px; height: 150px; object-fit: cover;">  | <img src="images/상근.jpeg" style="width: 150px; height: 150px; object-fit: cover;"> |
+|                                     ☃️ 김솔미 ☃️                                      |                                     🔥 박하솔 🔥                                      |                                     😎 최옥토 😎                                      |
+|                                      Frontend                                      |                                      Frontend                                      |                                      Frontend                                      |
+| <img src="images/솔미.svg" style="width: 150px; height: 150px; object-fit: cover;">  | <img src="images/하솔.jpeg" style="width: 150px; height: 150px; object-fit: cover;"> | <img src="images/옥토.png" style="width: 150px; height: 150px; object-fit: cover;">  |
