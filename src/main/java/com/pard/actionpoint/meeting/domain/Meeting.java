@@ -34,13 +34,13 @@ public class Meeting {
     @JoinColumn(name = "project_id")
     private Project project;
 
-    @OneToMany(mappedBy = "meeting", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "meeting", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Agenda> agendas = new ArrayList<>();
 
-    @OneToMany(mappedBy = "meeting", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "meeting", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ActionPoint> actionPoints = new ArrayList<>();
 
-    @OneToMany(mappedBy = "meeting", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "meeting", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MeetingReference> meetingReferences = new ArrayList<>();
 
     public Meeting(Project project, String meetingTitle, Date meetingDate, String meetingTime, String meetingParticipants, User writer) {
